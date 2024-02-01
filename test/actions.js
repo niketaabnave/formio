@@ -3132,6 +3132,21 @@ module.exports = (app, template, hook) => {
               role: 'authenticated',
             },
           })
+          .action({
+            title: 'IP Address Checking',
+            name: 'role',
+            priority: 1,
+            handler: ['after'],
+            method: ['create'],
+            condition: {
+              custom: 'execute = (header.Get("X-Forwarded-For") == "127.0.0.1")',
+            },
+            settings: {
+              association: 'new',
+              type: 'add',
+              role: 'authenticated',
+            },
+          })
           .execute(done);
       });
 
