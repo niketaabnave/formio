@@ -79,21 +79,17 @@ module.exports = function(formio) {
     currentLock.isLocked = false;
     schema.updateOne(
       {key: 'formio'},
-      {$set: {isLocked: currentLock.isLocked}},
-      (err) => {
-        if (err) {
-          return next(err);
-        }
-        schema.findOne({key: 'formio'}, (err, result) => {
-          if (err) {
-            return next(err);
-          }
+      {$set: {isLocked: currentLock.isLocked}})
+      .then(()=>{
+        schema.findOne({key: 'formio'})
+        .then(result =>{
           currentLock = result;
           debug.db('Lock unlocked');
           next();
-        });
-      }
-    );
+        })
+        .catch(err=>next(err));
+      })
+      .catch(err=>next(err));
   };
   /**
    * Fetch the SA certificate.
@@ -191,9 +187,6 @@ module.exports = function(formio) {
     if (!mongoConfig.hasOwnProperty('socketTimeoutMS')) {
       mongoConfig.socketTimeoutMS = 300000;
     }
-    if (!mongoConfig.hasOwnProperty('useNewUrlParser')) {
-      mongoConfig.useNewUrlParser = true;
-    }
     if (config.mongoSA || config.mongoCA) {
       mongoConfig.sslValidate = true;
       mongoConfig.sslCA = config.mongoSA || config.mongoCA;
@@ -205,30 +198,35 @@ module.exports = function(formio) {
       };
     }
 
-    mongoConfig.useUnifiedTopology = true;
+    const client = new MongoClient(dbUrl, mongoConfig);
 
-    // Establish a connection and continue with execution.
-    MongoClient.connect(dbUrl, mongoConfig, async function(err, client) {
-      if (err) {
-        debug.db(`Connection Error: ${err}`);
-        unlock(function() {
-          throw new Error(`Could not connect to the given Database for server updates: ${dbUrl}.`);
-        });
-      }
-      db = client.db(client.s.options.dbName);
-      debug.db('Connection successful');
+    async function connectMongo() {
       try {
-        const collection = await db.collection('schema');
-        debug.db('Schema collection opened');
-        schema = collection;
-      }
-      catch (err) {
-        return next(err);
-      }
-      // Load the tools available to help manage updates.
-      tools = require('./tools')(db, schema);
-      next();
-    });
+        await client.connect();
+        db = client.db(client.s.options.dbName);
+        debug.db('Connection successful');
+        try {
+          const collection = await db.collection('schema');
+          debug.db('Schema collection opened');
+          schema = collection;
+        }
+        catch (err) {
+          return next(err);
+        }
+        // Load the tools available to help manage updates.
+        tools = require('./tools')(db, schema);
+        return next();
+        }
+        catch (err) {
+          debug.db(`Connection Error: ${err}`);
+          unlock(function() {
+            throw new Error(`Could not connect to the given Database for server updates: ${dbUrl}.`);
+          });
+        }
+    }
+
+  // Establish a connection and continue with execution.
+ connectMongo();
   };
 
   /**
@@ -390,13 +388,15 @@ module.exports = function(formio) {
 
       debug.sanity('Checking formio schema');
       // A cached response was not viable here, query and update the cache.
-      schema.findOne({key: 'formio'}, (err, document) => {
-        if (err || !document) {
+      schema.findOne({key: 'formio'})
+      .then(document => {
+        if (!document) {
           cache.full.isValid = false;
           cache.partial.isValid = false;
 
           throw new Error('The formio lock was not found..');
         }
+
         debug.sanity('Schema found');
 
         // When sending a response, a direct query was performed, check for different versions.
@@ -421,6 +421,12 @@ module.exports = function(formio) {
             ? handleResponse()
             : handleResponse(cache.partial.error);
         }
+      })
+      .catch(err=>{
+        cache.full.isValid = false;
+        cache.partial.isValid = false;
+
+        throw new Error('The formio lock was not found..');
       });
     });
   };
@@ -468,27 +474,22 @@ module.exports = function(formio) {
       return next(new Error('No Schema collection was found..'));
     }
 
-    schema.find({key: 'formio'}).toArray(function(err, document) {
-      if (err) {
-        return next(err);
-      }
+    schema.find({key: 'formio'}).toArray()
+    .then(document=>{
       // Engage the lock.
-      else if (!document || document.length === 0) {
+      if (!document || document.length === 0) {
         // Create a new lock, because one was not present.
         debug.db('Creating a lock, because one was not found.');
         schema.insertOne({
           key: 'formio',
           isLocked: (new Date()).getTime(),
-          version: config.schema
-        }, function(err, document) {
-          if (err) {
-            return next(err);
-          }
-
-          currentLock = document.ops[0];
+          version: config.schema})
+        .then(document=>{
+          currentLock = document;
           debug.db('Created a new lock');
           next();
-        });
+        })
+        .catch(err=>next(err));
       }
       else if (document.length > 1) {
         return next('More than one lock was found, terminating updates.');
@@ -496,7 +497,6 @@ module.exports = function(formio) {
       else {
         debug.db(document);
         currentLock = document[0];
-
         if (currentLock.isLocked) {
           formio.util.log(' > DB is already locked for updating');
         }
@@ -504,25 +504,23 @@ module.exports = function(formio) {
           // Lock
           schema.updateOne(
             {key: 'formio'},
-            {$set: {isLocked: (new Date()).getTime()}},
-            (err) => {
-              if (err) {
-                throw err;
-              }
-
-              schema.findOne({key: 'formio'}, (err, result) => {
-                if (err) {
-                  return next(err);
-                }
+            {$set: {isLocked: (new Date()).getTime()}})
+            .then(() => {
+              schema.findOne({key: 'formio'})
+              .then((result) => {
                 currentLock = result;
                 debug.db('Lock engaged');
                 next();
-              });
-            }
-          );
+              })
+              .catch(err=>next(err));
+            })
+            .catch(err =>{
+              throw err;
+            });
         }
       }
-    });
+    })
+    .catch(err=>next(err));
   };
 
   /**

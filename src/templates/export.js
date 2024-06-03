@@ -83,33 +83,32 @@ module.exports = (router) => {
   // Export actions.
   const exportActions = function(_export, _map, options, next) {
     formio.actions.model.find({
-        form: {$in: _.keys(_map.forms)},
-        deleted: {$eq: null}
-      })
-      .lean(true)
-      .exec(function(err, actions) {
-        if (err) {
-          return next(err);
-        }
-        _.each(actions, function(action, index) {
-          assignForm(_map, action);
-          assignRole(_map, action.settings);
-          assignResource(_map, action.settings);
-          assignResources(_map, action.settings);
-          const machineName = action.machineName = hook.alter('machineNameExport', action.machineName);
-          _export.actions[machineName] = _.pick(action,
-            'title',
-            'name',
-            'form',
-            'condition',
-            'settings',
-            'priority',
-            'method',
-            'handler'
-          );
-        });
-        next();
+      form: {$in: _.keys(_map.forms)},
+      deleted: {$eq: null}
+    })
+    .lean(true)
+    .exec()
+    .then(actions=> {
+      _.each(actions, function(action, index) {
+        assignForm(_map, action);
+        assignRole(_map, action.settings);
+        assignResource(_map, action.settings);
+        assignResources(_map, action.settings);
+        const machineName = action.machineName = hook.alter('machineNameExport', action.machineName);
+        _export.actions[machineName] = _.pick(action,
+          'title',
+          'name',
+          'form',
+          'condition',
+          'settings',
+          'priority',
+          'method',
+          'handler'
+        );
       });
+      next();
+    })
+    .catch(err=>next(err));
   };
 
   // Export forms.
@@ -122,10 +121,8 @@ module.exports = (router) => {
     formio.resources.form.model
       .find(hook.alter('formQuery', {deleted: {$eq: null}}, options))
       .lean(true)
-      .exec(function(err, forms) {
-        if (err) {
-          return next(err);
-        }
+      .exec()
+      .then(forms => {
         _.each(forms, function(form) {
           if (!form || !form._id) {
             return;
@@ -194,7 +191,8 @@ module.exports = (router) => {
           });
         });
         next();
-      });
+      })
+      .catch(err => next(err));
   };
 
   // Export reports.
@@ -208,11 +206,8 @@ module.exports = (router) => {
     formio.resources.submission.model
       .find(hook.alter('submissionQuery', {form: reportingConfigurationFormId, deleted: {$eq: null}}, options))
       .lean(true)
-      .exec(function(err, reports) {
-        if (err) {
-          return next(err);
-        }
-
+      .exec()
+      .then(reports => {
         _.each(reports, report =>  {
           if (!report || !report.data) {
             return;
@@ -232,7 +227,8 @@ module.exports = (router) => {
         });
 
         next();
-      });
+      })
+      .catch(err => next(err));
   };
 
   const exportRevisions = function(_export, _map, options, next) {
@@ -268,10 +264,8 @@ module.exports = (router) => {
         };
         return hook.alter('formRevisionModel').find(query)
           .lean(true)
-          .exec((err, revisions) => {
-            if (err) {
-              return next(err);
-            }
+          .exec()
+          .then(revisions=>{
             if (
               revisions && revisions.length > 0
               && _map.revisions.revisionsData.length > 0
@@ -312,7 +306,8 @@ module.exports = (router) => {
               });
             }
             return next();
-          });
+          })
+          .catch(err=>next(err));
       }
       return next();
     }
@@ -323,28 +318,27 @@ module.exports = (router) => {
   // Export the roles.
   const exportRoles = function(_export, _map, options, next) {
     formio.resources.role.model
-      .find(hook.alter('roleQuery', {deleted: {$eq: null}}, options))
-      .lean(true)
-      .exec(function(err, roles) {
-        if (err) {
-          return next(err);
+    .find(hook.alter('roleQuery', {deleted: {$eq: null}}, options))
+    .lean(true)
+    .exec()
+    .then(roles=>{
+      _.each(roles, function(role) {
+        if (!role || !role._id) {
+          return;
         }
-        _.each(roles, function(role) {
-          if (!role || !role._id) {
-            return;
-          }
-          const machineName = role.machineName = hook.alter('machineNameExport', role.machineName);
-          _export.roles[machineName] = _.pick(role,
-            'title',
-            'description',
-            'admin',
-            'default'
-          );
-          _map.roles[role._id.toString()] = machineName;
-        });
-
-        next();
+        const machineName = role.machineName = hook.alter('machineNameExport', role.machineName);
+        _export.roles[machineName] = _.pick(role,
+          'title',
+          'description',
+          'admin',
+          'default'
+        );
+        _map.roles[role._id.toString()] = machineName;
       });
+
+      next();
+    })
+    .catch(err=>next(err));
   };
 
   /**

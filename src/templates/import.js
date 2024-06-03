@@ -355,15 +355,16 @@ module.exports = (router) => {
           },
         ]
       };
-      formio.resources.form.model.findOne(query).exec((err, doc) => {
-        if (err) {
-          debug.install(err);
-          return next(err);
-        }
+      formio.resources.form.model.findOne(query).exec()
+      .then(doc => {
         if (doc) {
           nestedForm.form = formio.util.idToString(doc._id);
         }
         next();
+      })
+      .catch(err=> {
+        debug.install(err);
+        return next(err);
       });
     }, (err) => {
       if (err) {
@@ -384,11 +385,7 @@ module.exports = (router) => {
         },
       ]
     };
-    return formio.resources.role.model.find(query).exec((err, docs = []) => {
-      if (err) {
-        debug.install(err);
-        return cb(err);
-      }
+    return formio.resources.role.model.find(query).exec().then((docs = []) =>{
       try {
         const rolesMap = {};
         docs.forEach((doc) => {
@@ -416,6 +413,10 @@ module.exports = (router) => {
       catch (err) {
         return cb(err);
       }
+    })
+    .catch(err=>{
+      debug.install(err);
+      return cb(err);
     });
   };
 
@@ -480,25 +481,22 @@ module.exports = (router) => {
           model.updateOne(
             {_id: resource._id, deleted: {$eq: null}},
             {$set: {components: resource.components}}
-          ).exec((err) => {
-            if (err) {
-              return next(err);
-            }
+          ).exec()
+          .then(() => {
             model.findOne(
               {_id: resource._id, deleted: {$eq: null}}
-            ).lean().exec((err, doc) => {
-              if (err) {
-                return next(err);
-              }
+            ).lean().exec()
+            .then(doc =>{
               if (!doc) {
                 return next();
               }
-
               resources[machineName] = doc;
               debug.cleanUp(`Updated resource component _ids for`, machineName);
               next();
-            });
-          });
+            })
+            .catch(err=>next(err));
+          })
+          .catch(err => next(err));
         }, done);
       },
       query(document, template) {
@@ -558,16 +556,12 @@ module.exports = (router) => {
           model.updateOne(
             {_id: form._id, deleted: {$eq: null}},
             {$set: {components: form.components}},
-          ).exec((err) => {
-            if (err) {
-              return next(err);
-            }
+          ).exec()
+          .then(() =>{
             model.findOne(
               {_id: form._id, deleted: {$eq: null}}
-            ).lean().exec((err, doc) => {
-              if (err) {
-                return next(err);
-              }
+            ).lean().exec()
+            .then(doc=>{
               if (!doc) {
                 return next();
               }
@@ -575,8 +569,10 @@ module.exports = (router) => {
               forms[machineName] = doc;
               debug.cleanUp(`Updated form component _ids for`, machineName);
               next();
-            });
-          });
+            })
+            .catch(err=>next(err));
+          })
+          .catch(err=>next(err));
         }, done);
       },
       query(document, template) {
@@ -813,12 +809,8 @@ module.exports = (router) => {
             deleted: {$eq: null}
           };
 
-          model.findOne(query).exec((err, doc) => {
-            if (err) {
-              debug.install(err);
-              return next(err);
-            }
-
+          model.findOne(query).exec()
+          .then(doc=>{
             const saveDoc = async function(updatedDoc, isNew = false) {
               try {
                const result = isNew
@@ -868,54 +860,48 @@ module.exports = (router) => {
                     hook.alter('formRevisionModel').find({
                       deleted: {$eq: null},
                       _rid: result._id
-                    }, (err, existingRevisions) => {
-                      if (err) {
-                        return next(err);
-                      }
+                    })
+                    .then(existingRevisions => {
                       let revisionsToCreate = [];
-
                       if (existingRevisions && existingRevisions.length > 0) {
-                       revisionsFromTemplate.forEach((revisionTemplate) => {
-                         if (
-                           !existingRevisions.find(
-                             revision => revision._vnote === revisionTemplate._vnote
-                             )
-                          ) {
-                            revisionTemplate._vid = revisionsToCreate.length + 1;
-                            revisionsToCreate.push(revisionTemplate);
-                         }
-                        });
-                      }
-                      else {
-                        revisionsToCreate = revisionsFromTemplate;
-                      }
+                        revisionsFromTemplate.forEach((revisionTemplate) => {
+                          if (
+                            !existingRevisions.find(
+                              revision => revision._vnote === revisionTemplate._vnote
+                              )
+                           ) {
+                             revisionTemplate._vid = revisionsToCreate.length + 1;
+                             revisionsToCreate.push(revisionTemplate);
+                          }
+                         });
+                       }
+                       else {
+                         revisionsToCreate = revisionsFromTemplate;
+                       }
 
-                      hook.alter('formRevisionModel').create(revisionsToCreate,
-                        (err, res)=>{
-                          if (err) {
-                            return next(err);
+                       hook.alter('formRevisionModel').create(revisionsToCreate)
+                       .then(res => {
+                        formio.resources.form.model.updateOne({
+                          _id: result._id
+                        },
+                        {$set:
+                          {_vid: revisionsToCreate.length + existingRevisions.length}}
+                        ).lean().exec()
+                        .then(()=>{
+                          res.forEach((createdRevision, i) => {
+                            revisionsToCreate[i].newId = createdRevision._id;
+                          });
+                          debug.save(items[machineName].machineName);
+                          if (entity.hasOwnProperty('deleteAllActions')) {
+                            return entity.deleteAllActions(updatedDoc._id, next);
                           }
-                          formio.resources.form.model.updateOne({
-                            _id: result._id
-                          },
-                          {$set:
-                            {_vid: revisionsToCreate.length + existingRevisions.length}},
-                          (err) => {
-                            if (err) {
-                              return next(err);
-                            }
-                            res.forEach((createdRevision, i) => {
-                              revisionsToCreate[i].newId = createdRevision._id;
-                            });
-                            debug.save(items[machineName].machineName);
-                            if (entity.hasOwnProperty('deleteAllActions')) {
-                              return entity.deleteAllActions(updatedDoc._id, next);
-                            }
-                            next();
-                          }
-                          );
-                        });
-                    });
+                          next();
+                        })
+                        .catch(err=>next(err));
+                       })
+                       .catch(err=>next(err));
+                    })
+                    .catch(err => next(err));
                   }
                   else {
                         debug.save(items[machineName].machineName);
@@ -965,6 +951,10 @@ module.exports = (router) => {
               items[machineName] = doc.toObject();
               return next();
             }
+          })
+          .catch(err=>{
+            debug.install(err);
+            return next(err);
           });
         });
       };
