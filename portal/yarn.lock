@@ -66,19 +66,19 @@
     redux "^4.2.0"
 
 "@formio/core@^2.1.0-dev.tt.2":
-  version "2.1.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@formio/core/-/core-2.1.0-rc.3.tgz#d2022a66ad7e07e89248899231d406dd179fa812"
-  integrity sha512-/WMbVo1Gda9cIKSak8gUNk8T+MXcYjJ+hHi4XTrBG28c+oQppHDmh4zm2tnBH5YP3elrpaPa917lVdJXa3iqxw==
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@formio/core/-/core-2.2.3.tgz#d6b0ba11670de5f5dd840f46e09af6cb75900ac3"
+  integrity sha512-wI4izMh54azFZBlBw/VzdfoZfhCbWSUC7iXgoJGZCaxk0Gr2Tgm4d0cdjrS9ToGidwMm5+xFFtlaX5oqF/Crcw==
   dependencies:
-    "@types/json-logic-js" "^2.0.5"
+    "@types/json-logic-js" "^2.0.7"
     browser-cookies "^1.2.0"
-    core-js "^3.33.2"
-    dayjs "^1.11.10"
-    dompurify "^3.0.6"
+    core-js "^3.37.1"
+    dayjs "^1.11.11"
+    dompurify "^3.1.4"
     eventemitter3 "^5.0.0"
     fast-json-patch "^3.1.1"
     fetch-ponyfill "^7.1.0"
-    inputmask "^5.0.9-beta.45"
+    inputmask "5.0.8"
     json-logic-js "^2.0.2"
     lodash "^4.17.21"
     moment "^2.29.4"
@@ -125,19 +125,20 @@
     uuid "^9.0.0"
     vanilla-picker "^2.12.3"
 
-"@formio/react@6.0.0-dev.568.ced0fbd":
-  version "6.0.0-dev.568.ced0fbd"
-  resolved "https://registry.yarnpkg.com/@formio/react/-/react-6.0.0-dev.568.ced0fbd.tgz#159f780aebf78dae0184e0765886e3b07b9c1239"
-  integrity sha512-y4Y3J54+X1IeimVxc+B+bIVeXOJ5tMINeOoG1Sp1L4ZSwboocuMKP6VDhqqYFHVS7Tjcov/6l6RTcgjxUjMKcw==
+"@formio/react@6.0.0-rc.1":
+  version "6.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@formio/react/-/react-6.0.0-rc.1.tgz#5ce25269287615fadb4cb0972e378783fb295b55"
+  integrity sha512-aSQIkBQJgncq/tHAq1P2W7gQwY8EaCJDk7BxEvs1gbbvD5bCYI9gWDp7/Qh7p381uds/O2xHT446Rmae0nEd5g==
   dependencies:
+    "@ungap/structured-clone" "^1.2.0"
     core-js "^3.35.1"
     lodash "^4.17.21"
     prop-types "^15.8.1"
 
 "@formio/text-mask-addons@^3.8.0-formio.2":
-  version "3.8.0-formio.2"
-  resolved "https://registry.yarnpkg.com/@formio/text-mask-addons/-/text-mask-addons-3.8.0-formio.2.tgz#b9489e68911c70a31997b97dd846d8a7cca6abdb"
-  integrity sha512-H4Sm+1Sx59jbrlKxtKbzethhp5OIcP8Oi4JBpsvH/SB8P/KCRmtjKbN5ACqURnXmYtBHLJC6Yr9KZibOVRGxpA==
+  version "3.8.0-formio.4"
+  resolved "https://registry.yarnpkg.com/@formio/text-mask-addons/-/text-mask-addons-3.8.0-formio.4.tgz#f3ce4bf978c6c5e8f671641d96f6fd116f7c92a3"
+  integrity sha512-vhkeIyuL+1rtC9S4IW8O3JCwroPtvJrkrcMO4wyELNqMIgQRKbiyBAitZfUP4tY04xdB5lxAinbzdwb+NMdX6w==
 
 "@formio/vanilla-text-mask@^5.1.1-formio.1":
   version "5.1.1-formio.1"
@@ -260,10 +261,10 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
   integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
-"@types/json-logic-js@^2.0.5":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@types/json-logic-js/-/json-logic-js-2.0.7.tgz#09a70a932d0be937618a9fc791291b069e637fb0"
-  integrity sha512-fucvZmbjqa1+gpw/nIwcP+ZIYHTvmwxuQQFKw/yU7+ZSD63z/xgY5pWN7sYUDRzg2Wf9STapL+7c66FNzhU6+Q==
+"@types/json-logic-js@^2.0.7":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@types/json-logic-js/-/json-logic-js-2.0.8.tgz#a1108452069a498981813e32dd081754ae6b3395"
+  integrity sha512-WgNsDPuTPKYXl0Jh0IfoCoJoAGGYZt5qzpmjuLSEg7r0cKp/kWtWp0HAsVepyPSPyXiHo6uXp/B/kW/2J1fa2Q==
 
 "@types/json-schema@*", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.15"
@@ -296,6 +297,11 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
+
+"@types/trusted-types@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
 "@typescript-eslint/eslint-plugin@7.12.0", "@typescript-eslint/eslint-plugin@^7.6.0":
   version "7.12.0"
@@ -940,10 +946,15 @@ copy-webpack-plugin@^12.0.2:
     schema-utils "^4.2.0"
     serialize-javascript "^6.0.2"
 
-core-js@^3.33.2, core-js@^3.35.1, core-js@^3.37.0:
+core-js@^3.35.1:
   version "3.37.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.37.1.tgz#d21751ddb756518ac5a00e4d66499df981a62db9"
   integrity sha512-Xn6qmxrQZyB0FFY8E3bgRXei3lWDJHhvI+u0q9TKIYM49G8pAr0FgnnrFRAmsbptZL1yxRADVXn+x5AGsbBfyw==
+
+core-js@^3.37.0, core-js@^3.37.1:
+  version "3.39.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.39.0.tgz#57f7647f4d2d030c32a72ea23a0555b2eaa30f83"
+  integrity sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==
 
 create-point-cb@^1.0.0:
   version "1.2.0"
@@ -1031,10 +1042,10 @@ date-fns@^2.30.0:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-dayjs@^1.11.10:
-  version "1.11.11"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.11.tgz#dfe0e9d54c5f8b68ccf8ca5f72ac603e7e5ed59e"
-  integrity sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==
+dayjs@^1.11.11:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.5"
@@ -1130,10 +1141,12 @@ dom-set@^1.0.1:
     is-array "^1.0.1"
     iselement "^1.1.4"
 
-dompurify@^3.0.6, dompurify@^3.1.1:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.1.5.tgz#2c6a113fc728682a0f55684b1388c58ddb79dc38"
-  integrity sha512-lwG+n5h8QNpxtyrJW/gJWckL+1/DQiYMX8f7t8Z2AZTPw1esVrqjI63i7Zc2Gz0aKzLVMYC1V1PL/ky+aY/NgA==
+dompurify@^3.1.1, dompurify@^3.1.4:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.2.1.tgz#d480972aeb1a59eb8ac47cba95558fbd72a0127b"
+  integrity sha512-NBHEsc0/kzRYQd+AY6HR6B/IgsqzBABrqJbpCDQII/OK6h7B7LXzweZTDsqSW2LkTRpoxf18YUP+YjGySk6B3w==
+  optionalDependencies:
+    "@types/trusted-types" "^2.0.7"
 
 downloadjs@^1.4.7:
   version "1.4.7"
@@ -1807,7 +1820,12 @@ inherits@2:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-inputmask@^5.0.8, inputmask@^5.0.9-beta.45:
+inputmask@5.0.8:
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/inputmask/-/inputmask-5.0.8.tgz#cd0f70b058c3291a0d4f27de25dbfc179c998bb4"
+  integrity sha512-1WcbyudPTXP1B28ozWWyFa6QRIUG4KiLoyR6LFHlpT4OfTzRqFfWgHFadNvRuMN1S9XNVz9CdNvCGjJi+uAMqQ==
+
+inputmask@^5.0.8:
   version "5.0.9"
   resolved "https://registry.yarnpkg.com/inputmask/-/inputmask-5.0.9.tgz#7bf4e83f5e199c88c0edf28545dc23fa208ef4be"
   integrity sha512-s0lUfqcEbel+EQXtehXqwCJGShutgieOaIImFKC/r4reYNvX3foyrChl6LOEvaEgxEbesePIrw1Zi2jhZaDZbQ==
